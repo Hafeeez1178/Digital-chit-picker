@@ -21,7 +21,7 @@
         alert("نام ضروری ہے!");
         return;
       }
-      const res = await fetch('/api/get-chit', {
+      const res = await fetch('get-chit', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({name})
