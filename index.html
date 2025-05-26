@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <title>ڈیجیٹل چٹ تقسیم کار</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; padding: 2em; }
+    button { padding: 1em 2em; font-size: 1.2em; cursor: pointer; }
+    #result { margin-top: 2em; font-size: 1.5em; font-weight: bold; color: green; }
+  </style>
+</head>
+<body>
+  <h1>ڈیجیٹل چٹ تقسیم کار</h1>
+  <button onclick="pickChit()">مجھے چٹ دو</button>
+  <div id="result">اپنا چٹ نمبر حاصل کرنے کے لیے کلک کریں۔</div>
+
+  <script>
+    async function pickChit() {
+      const name = prompt("براہ کرم اپنا نام درج کریں:");
+      if (!name) {
+        alert("نام ضروری ہے!");
+        return;
+      }
+      const res = await fetch('/api/get-chit', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({name})
+      });
+      const data = await res.json();
+      if (data.error) {
+        document.getElementById('result').textContent = "نام درست نہیں ہے۔";
+      } else {
+        document.getElementById('result').textContent = `محترم ${name}, آپ کا نمبر ہے: ${data.chits.join(", ")}`;
+      }
+    }
+  </script>
+</body>
+</html>
