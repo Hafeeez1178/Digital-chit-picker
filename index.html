@@ -1,37 +1,65 @@
 <!DOCTYPE html>
-<html lang="ur" dir="rtl">
+<html lang="ur">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>ڈیجیٹل چٹ تقسیم کار</title>
   <style>
-    body { font-family: sans-serif; text-align: center; padding: 2em; }
+    body { font-family: sans-serif; text-align: center; padding: 2em; direction: rtl; }
     button { padding: 1em 2em; font-size: 1.2em; cursor: pointer; }
-    #result { margin-top: 2em; font-size: 1.5em; font-weight: bold; color: green; }
+    #result { margin-top: 2em; font-size: 2em; font-weight: bold; color: green; }
   </style>
 </head>
 <body>
   <h1>ڈیجیٹل چٹ تقسیم کار</h1>
-  <button onclick="pickChit()">مجھے چٹ دو</button>
+  <p>نیچے دیے گئے بٹن پر کلک کریں تاکہ آپ کو ایک منفرد چٹ نمبر ملے۔</p>
+  <button onclick="getChit()">مجھے چٹ دو</button>
   <div id="result">اپنا چٹ نمبر حاصل کرنے کے لیے کلک کریں۔</div>
 
   <script>
-    async function pickChit() {
-      const name = prompt("براہ کرم اپنا نام درج کریں:");
-      if (!name) {
-        alert("نام ضروری ہے!");
+    async function getChit() {
+      const saved = localStorage.getItem('myChit');
+      const savedName = localStorage.getItem('myName');
+
+      if (saved && savedName) {
+        document.getElementById('result').textContent = `محترم ${savedName}, آپ کا نمبر ہے: ${saved}`;
         return;
       }
-      const res = await fetch('get-chit', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({name})
-      });
-      const data = await res.json();
-      if (data.error) {
-        document.getElementById('result').textContent = "نام درست نہیں ہے۔";
-      } else {
-        document.getElementById('result').textContent = `محترم ${name}, آپ کا نمبر ہے: ${data.chits.join(", ")}`;
+
+      const name = prompt("براہ کرم اپنا نام درج کریں:");
+      if (!name) {
+        alert("نام درج کرنا ضروری ہے۔");
+        return;
       }
+
+      try {
+        const response = await fetch('/api/get-chit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          alert(data.error || "کچھ غلط ہو گیا۔");
+          return;
+        }
+
+        localStorage.setItem('myChit', data.number);
+        localStorage.setItem('myName', name);
+
+        document.getElementById('result').textContent = `محترم ${name}, آپ کا نمبر ہے: ${data.number}`;
+      } catch (err) {
+        alert("سرور سے رابطہ نہیں ہو سکا۔");
+      }
+    }
+
+    // Auto-load if already assigned
+    const saved = localStorage.getItem('myChit');
+    const savedName = localStorage.getItem('myName');
+    if (saved && savedName) {
+      document.getElementById('result').textContent = `محترم ${savedName}, آپ کا نمبر ہے: ${saved}`;
     }
   </script>
 </body>
