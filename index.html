@@ -5,14 +5,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>ڈیجیٹل چٹ تقسیم کار</title>
   <style>
-    body { font-family: sans-serif; text-align: center; padding: 2em; direction: rtl; }
-    button { padding: 1em 2em; font-size: 1.2em; cursor: pointer; }
-    #result { margin-top: 2em; font-size: 2em; font-weight: bold; color: green; }
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      padding: 2em;
+      direction: rtl;
+    }
+    button {
+      padding: 1em 2em;
+      font-size: 1.2em;
+      cursor: pointer;
+    }
+    #result {
+      margin-top: 2em;
+      font-size: 2em;
+      font-weight: bold;
+      color: green;
+    }
   </style>
 </head>
 <body>
   <h1>ڈیجیٹل چٹ تقسیم کار</h1>
-  <p>نیچے دیے گئے بٹن پر کلک کریں تاکہ آپ کو ایک منفرد چٹ نمبر ملے۔</p>
+  <p>براہ کرم نیچے دیے گئے بٹن پر کلک کریں تاکہ آپ کو اپنا نمبر ملے۔</p>
   <button onclick="getChit()">مجھے چٹ دو</button>
   <div id="result">اپنا چٹ نمبر حاصل کرنے کے لیے کلک کریں۔</div>
 
@@ -46,21 +60,28 @@
           return;
         }
 
-        localStorage.setItem('myChit', data.number);
+        const chit = Array.isArray(data.numbers) ? data.numbers.join(', ') : data.numbers;
+        localStorage.setItem('myChit', chit);
         localStorage.setItem('myName', name);
 
-        document.getElementById('result').textContent = `محترم ${name}, آپ کا نمبر ہے: ${data.number}`;
+        const message = data.numbers.length > 1
+          ? `محترم ${name}, آپ کے نمبر ہیں: ${chit}`
+          : `محترم ${name}, آپ کا نمبر ہے: ${chit}`;
+
+        document.getElementById('result').textContent = message;
       } catch (err) {
         alert("سرور سے رابطہ نہیں ہو سکا۔");
       }
     }
 
-    // Auto-load if already assigned
-    const saved = localStorage.getItem('myChit');
-    const savedName = localStorage.getItem('myName');
-    if (saved && savedName) {
-      document.getElementById('result').textContent = `محترم ${savedName}, آپ کا نمبر ہے: ${saved}`;
-    }
+    // Auto show on load if saved
+    window.addEventListener('DOMContentLoaded', () => {
+      const saved = localStorage.getItem('myChit');
+      const savedName = localStorage.getItem('myName');
+      if (saved && savedName) {
+        document.getElementById('result').textContent = `محترم ${savedName}, آپ کا نمبر ہے: ${saved}`;
+      }
+    });
   </script>
 </body>
 </html>
